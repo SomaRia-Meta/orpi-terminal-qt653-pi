@@ -26,6 +26,43 @@
 └── artifacts/           预编译交付包（分卷，见其 README）
 ```
 
+## 预编译包（免构建，直接装）
+
+`artifacts/` 里是交叉编译好的交付包（258MB，因 GitHub 单文件 100MB 限制拆成 3 卷）：
+
+| 文件 | 大小 |
+| :--- | :--- |
+| `artifacts/orpi-qt653-pi3.tar.zst.part00` | 90.0 MB |
+| `artifacts/orpi-qt653-pi3.tar.zst.part01` | 90.0 MB |
+| `artifacts/orpi-qt653-pi3.tar.zst.part02` | 77.7 MB |
+
+合并并校验：
+
+```bash
+cd artifacts
+cat orpi-qt653-pi3.tar.zst.part* > orpi-qt653-pi3.tar.zst
+sha256sum orpi-qt653-pi3.tar.zst
+# 74d1b6f1d479e04f536bbc487b495cf3f3979847f4d93ee99eadfa7b022b3e3c
+```
+
+解压后 615MB，包含：
+
+- `opt/qt653-arm64/` — Qt 6.5.3 aarch64 运行时（WebEngine、Multimedia、TextToSpeech，
+  8 个平台插件 + xcb EGL 集成）
+- `usr/` — pi_terminal 产物（可执行、库、QML 预缓存、模块、语音资源）
+- `部署说明.md`、`deploy-pi.sh`
+
+安装到 Pi：
+
+```bash
+sudo tar -xf orpi-qt653-pi3.tar.zst -C /tmp
+sudo bash /tmp/orpi-qt653-pi3/deploy-pi.sh
+```
+
+自启/全屏/沙箱的 systemd 配置见 `deploy/README.md`。
+
+---
+
 ## 快速开始
 
 ### 构建（在 x86_64 Ubuntu 24.04 上）
