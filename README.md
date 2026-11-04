@@ -12,7 +12,6 @@
 
 ```
 ├── src/                 项目源码（pi_terminal + third_party + module-devkit）
-├── firmware/            ESP32 模块固件包（module-devkit、示例、烧录技能）
 ├── cross-build/         交叉编译链
 │   ├── build-qt653.sh           Qt 6.5.3 配置+构建+安装
 │   ├── build-project.sh         项目交叉编译
@@ -70,5 +69,5 @@ sudo bash /tmp/orpi-qt653-pi3/deploy-pi.sh          # 装 Qt 到 /opt/qt653-arm6
 
 ## 许可
 
-`src/` 与 `firmware/` 沿用原项目许可；本仓库新增的脚本与文档为 MIT。
+`src/` 沿用原项目许可；本仓库新增的脚本与文档为 MIT。
 `artifacts/` 内的二进制包由上述源码构建而来。

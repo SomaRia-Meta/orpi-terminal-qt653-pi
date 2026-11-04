@@ -21,4 +21,4 @@ systemctl --user daemon-reload
 systemctl --user restart pi-module-terminal
 ```
 
-`--demo` 会附加模拟模块 80；接真实 ESP32 时去掉它并改成对应的 `--config` 产品配置。
+`--demo` 会附加模拟模块 80；接真实模块硬件时去掉它并改成对应的 `--config` 产品配置。
