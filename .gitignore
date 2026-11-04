@@ -13,4 +13,3 @@ src/pi-stage*/
 *.swp
 __pycache__/
 firmware/
-artifacts/
