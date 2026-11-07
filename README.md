@@ -73,20 +73,39 @@ sudo bash /tmp/orpi-qt653-pi3/deploy-pi.sh
 宿主依赖与 sysroot 准备见 [`cross-build/README.md`](cross-build/README.md)。
 
 ```bash
-export ORPI_SYSROOT=/path/to/pi-sysroot
-export ORPI_HOST_QT=/opt/Qt/6.5.3/gcc_64
-export ORPI_QT_PREFIX=/path/to/qt653-arm64
-export ORPI_CROSS_PREFIX=/usr/bin/aarch64-linux-gnu-
-export QT_SRC=/path/to/qt-everywhere-src-6.5.3
+# 三件套解压到 dist/sdk/{qt653-arm64,host-qt,pi-sysroot}，或设置 ORPI_SDK_ROOT
+./sdk/verify-sdk.sh                 # 先自检：缺哪项、怎么补，逐条打印
+export ORPI_FLITE_ROOT=$(pwd)/build/flite   # 见下方"项目侧还需要一步"
 
-./cross-build/build-qt653.sh        # 构建 Qt 6.5.3（含 WebEngine）
+./cross-build/build-qt653.sh        # 仅当没有现成 Qt 开发树时才需要（数小时）
 ./cross-build/build-project.sh      # 构建示例项目
 ./cross-build/make-deliverable.sh   # 产出 dist/orpi-qt653-pi3.tar.zst
 ```
 
+### 没有交接盘：三件套怎么来
+
+`artifacts/` 里只有**运行时**，编译还需要目标机 Qt 开发树、host Qt、Pi sysroot。
+三者都不小，不进 git；用 [`sdk/`](sdk/README.md) 的脚本产出或校验：
+
+```bash
+./sdk/make-dev-sdk.sh /path/to/qt653-arm64     # include/lib/cmake/mkspecs → ~430 MB
+./sdk/make-host-qt.sh                          # aqtinstall 拉 6.5.3 gcc_64 → ~290 MB
+./sdk/make-sysroot.sh raspberrypi@<pi-ip>      # 从 Pi rsync 并清掉系统 Qt 6.4 → ~470 MB
+./sdk/verify-sdk.sh                            # 11 项自检
+```
+
+**注意**：目标机 Debian 12 的 libstdc++ 是 GCC 12，必须用 `aarch64-linux-gnu-g++-12`；
+用宿主默认 GCC 13 会缺 `std::ios_base_library_init`。`env.sh` 会自动选 12 并生成包装器。
+
 ## 仓库结构
 
 ```
+├── sdk/                三件套产出与自检（dev 树 / host Qt / sysroot）
+│   ├── verify-sdk.sh           11 项自检
+│   ├── make-dev-sdk.sh         打目标机 Qt 开发树
+│   ├── make-host-qt.sh         取/打 host Qt（moc 在 libexec/）
+│   ├── make-sysroot.sh         从 Pi rsync sysroot 并清系统 Qt 6.4
+│   └── build-flite.sh          预构建 flite（绕开 vendored 构建的引号 bug）
 ├── cross-build/         交叉编译链
 │   ├── build-qt653.sh           Qt 6.5.3 配置 + 构建 + 安装
 │   ├── build-project.sh         示例项目交叉编译

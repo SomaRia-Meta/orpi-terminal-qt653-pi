@@ -1,5 +1,9 @@
 # 交叉编译链（Qt 6.5.3 aarch64 + pi_terminal）
 
+> **快速路径**：如果只是要编 pi_terminal，先跑 `./sdk/verify-sdk.sh`。
+> 三件套（目标机 Qt 开发树 / host Qt / sysroot）可用 `sdk/make-*.sh` 产出，
+> 不必从 Qt 源码重编；本文第 3～4 节只在“连 Qt 开发树都没有”时才需要。
+
 目标机：Raspberry Pi 3 Model B，Debian 12 bookworm aarch64（glibc **2.36**）。
 宿主：Ubuntu 24.04 x86_64（glibc 2.39）。
 
@@ -22,6 +26,9 @@ Python 3.12 需要 `imp` 垫片（Chromium 脚本用）：把仓库 `tools/pyshi
 `PYTHONPATH` 里（`env.sh` 已处理）。
 
 ## 2. Pi sysroot
+
+> 已有脚本：`./sdk/make-sysroot.sh user@pi-host` 会 rsync、清系统 Qt 6.4、相对化符号链接并打包。
+> 下面是它做的事，手工操作时可参考。
 
 从 Pi 上 rsync 一份根文件系统（剔除 `/proc /sys /dev /home /var` 等），或者复用项目移交的
 `pi-sysroot`。必须清理其中**系统的 Qt 6.4**（否则 find_package 会找到 6.4）：
@@ -67,7 +74,7 @@ vendored six 1.14、catapult 的 html5lib、路径保持 ASCII）。
 export ORPI_SYSROOT=/path/to/pi-sysroot
 export ORPI_HOST_QT=/opt/Qt/6.5.3/gcc_64        # Qt 官方 x86_64 SDK
 export ORPI_QT_PREFIX=/path/to/qt653-arm64      # 安装前缀
-export ORPI_CROSS_PREFIX=/usr/bin/aarch64-linux-gnu-   # 或自己的 12 版软链
+export ORPI_CROSS_PREFIX=/usr/bin/aarch64-linux-gnu-   # 必须是 GCC 12（见 sdk/verify-sdk.sh）
 export QT_SRC=/path/to/qt-everywhere-src-6.5.3
 ./cross-build/build-qt653.sh        # 配置 + 打补丁 + ninja + install
 ./cross-build/build-project.sh      # 项目交叉编译

@@ -13,3 +13,9 @@ src/pi-stage*/
 *.swp
 __pycache__/
 firmware/
+
+# 本地产出的 SDK / 构建目录（体积大，走 Release 或内网分发）
+dist/
+build/
+*.tar.zst
+!artifacts/*.part*
