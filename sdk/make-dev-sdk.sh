@@ -23,6 +23,6 @@ find "$OUT_DIR/$NAME/lib" -maxdepth 1 -name '*.prl' -print0 | xargs -0 -r ls >/d
   echo "source: $SRC"
   echo "date: $(date '+%F %T %z')"
 } > "$OUT_DIR/$NAME/BUILD.txt"
-tar -C "$OUT_DIR" -c "$NAME" | zstd -19 -T0 -o "$OUT_DIR/$NAME.tar.zst" -f
+tar -C "$OUT_DIR" -c "$NAME" | zstd -${ZSTD_LEVEL:-19} -T0 -o "$OUT_DIR/$NAME.tar.zst" -f
 sha256sum "$OUT_DIR/$NAME.tar.zst" | tee "$OUT_DIR/$NAME.tar.zst.sha256"
 echo "产物: $OUT_DIR/$NAME.tar.zst"

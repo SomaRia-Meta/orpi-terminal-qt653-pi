@@ -18,6 +18,6 @@ fi
 [ -f "$SRC/bin/moc" ] || { echo "错误: $SRC/bin/moc 不存在；装 aqtinstall 或指定 ORPI_HOST_QT" >&2; exit 1; }
 rm -rf "$OUT_DIR/$NAME"; mkdir -p "$OUT_DIR/$NAME"
 cp -a "$SRC/." "$OUT_DIR/$NAME/"
-tar -C "$OUT_DIR" -c "$NAME" | zstd -19 -T0 -o "$OUT_DIR/$NAME.tar.zst" -f
+tar -C "$OUT_DIR" -c "$NAME" | zstd -${ZSTD_LEVEL:-19} -T0 -o "$OUT_DIR/$NAME.tar.zst" -f
 sha256sum "$OUT_DIR/$NAME.tar.zst" | tee "$OUT_DIR/$NAME.tar.zst.sha256"
 echo "产物: $OUT_DIR/$NAME.tar.zst"
